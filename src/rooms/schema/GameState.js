@@ -11,6 +11,7 @@ class Entity extends Schema {
         this.hp = 100;
         this.maxHp = 100;
         this.name = "";
+        this.level = 1;
     }
 }
 schema.defineTypes(Entity, {
@@ -18,33 +19,61 @@ schema.defineTypes(Entity, {
     y: "number",
     hp: "number",
     maxHp: "number",
-    name: "string"
+    name: "string",
+    level: "number"
 });
 
 class Player extends Entity {
     constructor() {
         super();
         this.class = "warrior";
-        this.points = 0;
-        // Путь для движения (массив координат)
-        // В Colyseus лучше не синхронизировать весь путь, а только цель,
-        // но для плавности оставим координаты
+        this.exp = 0;
+        this.maxExp = 100;
+        
         this.targetX = 0;
         this.targetY = 0;
+        
+        // Характеристики
+        this.strength = 0;
+        this.agility = 0;
+        this.endurance = 0;
+        this.intelligence = 0;
+        
+        this.attack = 0;
+        this.armor = 0;
+        
+        // Внешний вид
+        this.skin = 0;
+        this.avatar = "";
+
+        this.battleId = "";
+        this.partyId = "";
     }
 }
 schema.defineTypes(Player, {
     class: "string",
-    points: "number",
+    exp: "number",
+    maxExp: "number",
     targetX: "number",
-    targetY: "number"
+    targetY: "number",
+    
+    strength: "number",
+    agility: "number",
+    endurance: "number",
+    intelligence: "number",
+    
+    attack: "number",
+    armor: "number",
+    
+    skin: "number",
+    avatar: "string"
 });
 
 class NPC extends Entity {
     constructor() {
         super();
-        this.id = 0; // ID из базы
-        this.type = ""; // Тип моба
+        this.id = 0; 
+        this.type = ""; 
     }
 }
 schema.defineTypes(NPC, {
@@ -61,7 +90,9 @@ class GameState extends Schema {
 }
 schema.defineTypes(GameState, {
     players: { map: Player },
-    npcs: { map: NPC }
+    npcs: { map: NPC },
+    battleId: "string",
+    partyId: "string"
 });
 
 module.exports = { GameState, Player, NPC };
