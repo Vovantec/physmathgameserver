@@ -544,6 +544,51 @@ class GameRoom extends colyseus.Room {
       playerSchema.armor = (dbData.pdef || 0) + bonuses.pdefBonus;
   }
 
+  async giveReward(player, money, itemIds) {
+      const client = this.clients.find(c => c.sessionId === player.id);
+      if (!client) return;
+
+      // Локальное обновление (если инвентарь в памяти содержит деньги)
+      // В текущей реализации inventory это массив предметов. 
+      // Деньги обычно хранятся отдельно или как предмет с ID 'coins'
+      
+      // Отправляем запрос на API для сохранения лута
+      try {
+          // Нам нужен новый API роут на сайте: /api/internal/reward
+          await axios.post(`${API_URL}/api/internal/reward`, {
+              userId: client.auth.userId,
+              addMoney: money,
+              addItems: itemIds
+          }, { headers: { 'x-api-secret': API_KEY } });
+          
+          client.send("notif", { message: `Получено: ${money} монет`, type: "success" });
+          if (itemIds.length > 0) {
+              client.send("notif", { message: `Получено предметов: ${itemIds.length}`, type: "success" });
+              // В идеале: перезапросить инвентарь
+          }
+      } catch (e) {
+          console.error("Ошибка выдачи награды:", e.message);
+      }
+  }
+
+  // Обработка смерти монстра (для респавна)
+  handleMonsterDeath(monsterDbId) {
+      // Ищем NPC на карте с таким ID
+      // У нас ключи: "npc_1", "npc_2" и т.д.
+      // Проблема: у нас может быть несколько одинаковых мобов.
+      // В текущей реализации spawnNPCs спавнит по ID из базы уникально.
+      
+      const npcKey = `npc_${monsterDbId}`;
+      const npc = this.state.npcs.get(npcKey);
+      if (npc) {
+          npc.hp = 0; // Скрываем на клиенте
+          // Таймер респавна
+          this.clock.setTimeout(() => {
+              npc.hp = npc.maxHp; // Воскрешаем
+          }, 60000); // 1 минута
+      }
+  }
+
   async onLeave(client) {
     console.log(`Client left: ${client.sessionId}`);
     

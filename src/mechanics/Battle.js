@@ -198,35 +198,62 @@ class Battle {
         }
     }
 
+    // В src/mechanics/Battle.js
+
     finishBattle(isWin) {
         this.finished = true;
         
         if (isWin) {
-            // Расчет опыта (index.js)
-            // exp = (15 * monster.level + 30) * coefExp * (monster.elite + 1) / players.length
             let totalExp = 0;
+            let totalMoney = 0;
+            const drops = []; // Список выпавших предметов ID
+
             this.monsters.forEach(m => {
-                // Коэффициент разницы уровней (упрощенно берем 1, если нет уровней у мобов)
+                // 1. Опыт
                 const lvlCoef = 1; 
                 const eliteCoef = (m.elite || 0) + 1;
                 const mLevel = m.level || 1;
-                
-                const exp = (15 * mLevel + 30) * lvlCoef * eliteCoef;
-                totalExp += exp;
+                totalExp += (15 * mLevel + 30) * lvlCoef * eliteCoef;
+
+                // 2. Деньги (Формула из index.old.js)
+                const money = (0.3 * Math.pow(mLevel, 3) - 6 * Math.sqrt(mLevel) + 40.85 * mLevel - 5.2) * eliteCoef;
+                totalMoney += Math.max(0, Math.floor(money));
+
+                // 3. Предметы (Упрощенно: если у моба есть drop_main, кидаем его)
+                // В index.old.js это было сложнее, но начнем с малого
+                if (m.drop_main && Math.random() < 0.3) { // 30% шанс
+                    drops.push(m.drop_main);
+                }
             });
             
+            // Делим опыт и деньги на группу
             const expPerPlayer = Math.floor(totalExp / this.players.length);
+            const moneyPerPlayer = Math.floor(totalMoney / this.players.length);
             
             this.players.forEach(player => {
+                // Начисляем опыт (уже есть)
                 this.room.addExperience(player, expPerPlayer);
+                
+                // Начисляем награды через GameRoom (нужно реализовать метод giveReward)
+                this.room.giveReward(player, moneyPerPlayer, drops);
             });
 
-            this.broadcast("battle:finish", { winner: "players", exp: expPerPlayer });
+            this.broadcast("battle:finish", { 
+                winner: "players", 
+                exp: expPerPlayer,
+                money: moneyPerPlayer,
+                drops: drops 
+            });
+            
+            // Уведомляем комнату, что мобы умерли (для респавна)
+            this.monsters.forEach(m => {
+                this.room.handleMonsterDeath(m.id); // m.id здесь это ID базы, нужно аккуратнее
+            });
+
         } else {
             this.broadcast("battle:finish", { winner: "monsters" });
         }
 
-        // Удаляем бой через менеджер
         this.room.battleManager.removeBattle(this.id);
     }
 }

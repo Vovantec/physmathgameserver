@@ -15,6 +15,12 @@ class BattleManager {
 
         // 1. Определяем участников боя (Соло или Группа)
         let battlePlayers = [initiator];
+
+        const mapNpc = this.room.state.npcs.get(monsterId); // monsterId = "npc_1"
+        if (!mapNpc || mapNpc.hp <= 0) {
+            client.send("notif", { message: "Монстр мертв или отсутствует", type: "error" });
+            return;
+        }
         
         // Если игрок в группе — берем всех членов группы
         if (initiator.partyId) {
