@@ -1,0 +1,26 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "PhysMath Project",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "Vovantec",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "eiows": "^3.4.2",
+    "express": "^4.17.1",
+    "lodash": "^4.17.21",
+    "mysql2": "^2.3.0",
+    "nodemon": "^2.0.7",
+    "socket.io": "^4.0.0",
+    "underscore": "^1.13.1"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.3",
+    "utf-8-validate": "^5.0.4"
+  }
+}
