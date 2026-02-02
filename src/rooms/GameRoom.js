@@ -5,6 +5,9 @@ const DataManager = require('../managers/GameDataManager');
 const path = require('path');
 const fs = require('fs');
 
+const BattleManager = require('../managers/BattleManager');
+const PartyManager = require('../managers/PartyManager');
+
 const API_URL = process.env.API_URL || 'http://web:3000';
 const API_KEY = process.env.INTERNAL_API_KEY;
 
