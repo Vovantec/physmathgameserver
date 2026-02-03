@@ -453,8 +453,14 @@ class GameRoom extends colyseus.Room {
         };
 
     } catch (e) {
-        console.error("Auth/Load failed:", e.message);
-        throw new colyseus.ServerError(500, e.message);
+        // Добавляем подробный вывод ошибки в консоль
+        if (e.response) {
+            console.error("Auth Error Status:", e.response.status);
+            console.error("Auth Error Data:", e.response.data);
+        } else {
+            console.error("Auth Connection Error:", e.message);
+        }
+        throw new colyseus.ServerError(500, "Auth error");
     }
   }
 
