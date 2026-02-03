@@ -454,7 +454,7 @@ class GameRoom extends colyseus.Room {
 
     } catch (e) {
         console.error("Auth/Load failed:", e.message);
-        throw new colyseus.ServerError(500, "Auth error");
+        throw new colyseus.ServerError(500, e.message);
     }
   }
 
