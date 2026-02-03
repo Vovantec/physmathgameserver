@@ -505,11 +505,6 @@ class GameRoom extends colyseus.Room {
     
     // Отправляем инвентарь
     client.send("inventory:update", inventory);
-
-    // === ДОБАВЛЕНО: Отправка карты клиенту ===
-    if (this.mapData) {
-        client.send("mapData", this.mapData);
-    }
   }
 
   calcAttributes(playerSchema, dbData, inventory) {
