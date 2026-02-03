@@ -128,6 +128,14 @@ class GameRoom extends colyseus.Room {
         this.partyManager.handleLeave(client);
     });
 
+    this.onMessage("requestMap", (client) => {
+        if (this.mapData && this.mapData.length > 0) {
+            client.send("mapData", this.mapData);
+        } else {
+            console.warn("Клиент запросил карту, но она пуста");
+        }
+    });
+
     // АВТОСОХРАНЕНИЕ: Каждые 30 секунд сохраняем всех игроков
     //this.setSimulationInterval(() => this.update()); // Если нужно для физики (опционально)
     
@@ -495,8 +503,13 @@ class GameRoom extends colyseus.Room {
 
     this.state.players.set(client.sessionId, player);
     
-    // Отправляем инвентарь только этому игроку
+    // Отправляем инвентарь
     client.send("inventory:update", inventory);
+
+    // === ДОБАВЛЕНО: Отправка карты клиенту ===
+    if (this.mapData) {
+        client.send("mapData", this.mapData);
+    }
   }
 
   calcAttributes(playerSchema, dbData, inventory) {
