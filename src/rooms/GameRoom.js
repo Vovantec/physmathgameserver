@@ -129,7 +129,7 @@ class GameRoom extends colyseus.Room {
     });
 
     // АВТОСОХРАНЕНИЕ: Каждые 30 секунд сохраняем всех игроков
-    this.setSimulationInterval(() => this.update()); // Если нужно для физики (опционально)
+    //this.setSimulationInterval(() => this.update()); // Если нужно для физики (опционально)
     
     this.clock.setInterval(() => {
         this.clients.forEach(client => {
