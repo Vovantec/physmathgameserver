@@ -40,11 +40,15 @@ class GameRoom extends colyseus.Room {
         const mapPath = path.join(__dirname, '../../data/maps.json');
         if (fs.existsSync(mapPath)) {
             const rawMap = JSON.parse(fs.readFileSync(mapPath, 'utf8'));
-            this.mapData = rawMap[0];
+            // maps.json - это массив рядов (2D массив). Берем его целиком.
+            // Было: this.mapData = rawMap[0]; (ОШИБКА: бралась только первая строка)
+            this.mapData = rawMap; 
+            console.log(`Map loaded. Rows: ${this.mapData.length}`);
         } else {
             this.mapData = [];
         }
     } catch (e) {
+        console.error("Error loading map:", e.message);
         this.mapData = [];
     }
 
