@@ -140,6 +140,10 @@ class GameRoom extends colyseus.Room {
         }
     });
 
+    this.onMessage("movePath", (client, message) => {
+        const path = message.path;
+    });
+
     // АВТОСОХРАНЕНИЕ: Каждые 30 секунд сохраняем всех игроков
     //this.setSimulationInterval(() => this.update()); // Если нужно для физики (опционально)
     
